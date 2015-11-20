@@ -12,5 +12,9 @@
       "include": true
     }
   },
-  "dependencies": {}
+  "dependencies": {
+    "github-electron/github-electron.d.ts": {
+      "ref": "16134c168d021351acb1673ee9659644fc58c424"
+    }
+  }
 }
