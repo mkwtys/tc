@@ -21,7 +21,11 @@ export default class Application {
   }
 
   bind() {
-    app.on('window-all-closed', () => {})
+    app.on('window-all-closed', () => {
+        if (process.platform != 'darwin') {
+          app.quit();
+        }
+      })
       .on('ready', () => {
         this.onReady();
       });
