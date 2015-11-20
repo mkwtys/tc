@@ -5,11 +5,6 @@
 import BrowserWindow from 'browser-window';
 import TwitterApi from 'node-twitter-api';
 
-type AuthenticationWindowOptions = {
-  callback: string,
-  consumerKey: string,
-  consumerSecret: string
-}
 
 export default class AuthenticationWindow {
   _window: BrowserWindow;
