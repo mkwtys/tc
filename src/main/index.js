@@ -1,22 +1,8 @@
-'use strict';
+/// <reference path="/typings/bundle.d.ts" />
 
-const app = require('app');
-const BrowserWindow = require('browser-window');
-let mainWindow = null;
+/* @flow */
 
-app.on('window-all-closed', function() {
-  if (process.platform != 'darwin') {
-    app.quit();
-  }
-});
+import Application from './Application'
 
-app.on('ready', function() {
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600
-  });
-  mainWindow.loadUrl('file://' + __dirname + '/../renderer/index.html');
-  mainWindow.on('closed', function() {
-    mainWindow = null;
-  });
-});
+const application = new Application();
+application.run();
