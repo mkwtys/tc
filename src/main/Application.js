@@ -2,10 +2,11 @@
 
 /* @flow */
 
-import app from 'app';
-import AuthenticationWindow from './AuthenticationWindow'
-import crashReporter from 'crash-reporter';
+import electron from 'electron';
+import AuthenticationWindow from './AuthenticationWindow';
 import MainWindow from './MainWindow';
+
+const app = electron.app;
 
 export default class Application {
   _accessToken: string;
@@ -52,6 +53,6 @@ export default class Application {
   }
 
   startCrashReporter() {
-    crashReporter.start();
+    electron.crashReporter.start();
   }
 }

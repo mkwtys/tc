@@ -2,7 +2,9 @@
 
 /* @flow */
 
-import BrowserWindow from 'browser-window';
+import electron from 'electron';
+
+const BrowserWindow = electron.BrowserWindow;
 
 export default class MainWindow {
   constructor() {

@@ -2,9 +2,10 @@
 
 /* @flow */
 
-import BrowserWindow from 'browser-window';
+import electron from 'electron';
 import TwitterApi from 'node-twitter-api';
 
+const BrowserWindow = electron.BrowserWindow;
 
 export default class AuthenticationWindow {
   _window: BrowserWindow;
