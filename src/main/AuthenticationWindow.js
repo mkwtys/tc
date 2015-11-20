@@ -3,32 +3,17 @@
 /* @flow */
 
 import electron from 'electron';
+import {EventEmitter} from 'events';
 import TwitterApi from 'node-twitter-api';
 
 const BrowserWindow = electron.BrowserWindow;
 
-export default class AuthenticationWindow {
+export default class AuthenticationWindow extends EventEmitter {
   _window: BrowserWindow;
-  constructor({callback, consumerKey, consumerSecret}: {
-    callback: string,
-    consumerKey: string,
-    consumerSecret: string
-  }) {
-    const twitterApi = new TwitterApi({
-      callback,
-      consumerKey,
-      consumerSecret
-    });
 
-    twitterApi.getRequestToken((error, requestToken, requestTokenSecret) => {
-      const url = twitterApi.getAuthUrl(requestToken);
-      this._window = new BrowserWindow({
-        width: 800,
-        height: 600,
-        'node-integration': false
-      });
-      this.getAccessToken({twitterApi, requestToken, requestTokenSecret, url});
-    });
+  constructor({callback, consumerKey, consumerSecret}) {
+    super();
+    this.setTwitterApi({callback, consumerKey, consumerSecret});
   }
 
   getAccessToken({twitterApi, requestToken, requestTokenSecret, url}: {
@@ -40,8 +25,8 @@ export default class AuthenticationWindow {
     this._window.webContents.on('will-navigate', (event, url) => {
       let matched;
       if (matched = url.match(/\?oauth_token=([^&]*)&oauth_verifier=([^&]*)/)) {
-        twitter.getAccessToken(requestToken, requestTokenSecret, matched[2], (error, accessToken, accessTokenSecret) => {
-          this.emit('authentication-succeeded', {
+        twitterApi.getAccessToken(requestToken, requestTokenSecret, matched[2], (error, accessToken, accessTokenSecret) => {
+          this.emit('authentication:succeeded', {
             accessToken,
             accessTokenSecret
           });
@@ -52,10 +37,32 @@ export default class AuthenticationWindow {
         });
       } else if (matched = url.match(/&redirect_after_login_verification=([^&]*)/)) {
         this._window.webContents.on('did-get-redirect-request', (event, oldUrl, newUrl, isMainFrame) => {
-          this.getAccessToken(twitter, requestToken, requestTokenSecret, newUrl);
+          this.getAccessToken(twitterApi, requestToken, requestTokenSecret, newUrl);
         });
       };
     });
     this._window.loadURL(url);
+  }
+
+  setTwitterApi({callback, consumerKey, consumerSecret}) {
+    const twitterApi = new TwitterApi({
+      callback,
+      consumerKey,
+      consumerSecret
+    });
+
+    twitterApi.getRequestToken((error, requestToken, requestTokenSecret) => {
+      const url = twitterApi.getAuthUrl(requestToken);
+      this.setWindow();
+      this.getAccessToken({twitterApi, requestToken, requestTokenSecret, url});
+    });
+  }
+
+  setWindow() {
+    this._window = new BrowserWindow({
+      width: 1200,
+      height: 800,
+      'node-integration': false
+    });
   }
 }

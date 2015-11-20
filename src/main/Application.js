@@ -13,12 +13,13 @@ export default class Application {
   _accessTokenSecret: string;
   _consumerKey: string;
   _consumerSecret: string;
+  _mainWindow: MainWindow;
 
   constructor() {
     this._accessToken = null;
     this._accessTokenSecret = null;
-    this._consumerKey = 'kj4cLg54JjVqnFuOm9NlSuvIC';
-    this._consumerSecret = 'aCucG2eILi2JTem2EAlZhQzN5AlvU6KBfLZ70jxWjdifaB3wAZ';
+    this._consumerKey = 'ANpNHJTRSTtnFZsjSnwIY1KSv';
+    this._consumerSecret = 'Iza6ZGddrEk475o8DG7YR0JVH6LLjwZqOH7ZEWbs7txq22uOZR';
   }
 
   bind() {
@@ -32,16 +33,30 @@ export default class Application {
       });
   }
 
+  onAuthenticationSucceeded({accessToken, accessTokenSecret}) {
+    this._accessToken = accessToken;
+    this._accessTokenSecret = accessTokenSecret;
+    this.openMainWindow();
+  }
+
   onReady() {
     this.openAuthenicationWindow();
     this.setupMenu();
   }
 
   openAuthenicationWindow() {
-    new AuthenticationWindow({
+    const authenticationWindow = new AuthenticationWindow({
+      callback: 'https://github.com/mkwtys/tc',
       consumerKey: this._consumerKey,
-      consumerSecret: this._consumerSecret,
+      consumerSecret: this._consumerSecret
     });
+    authenticationWindow.on('authentication:succeeded', (payload) => {
+      this.onAuthenticationSucceeded(payload);
+    });
+  }
+
+  openMainWindow() {
+    this._mainWindow = new MainWindow();
   }
 
   run() {
