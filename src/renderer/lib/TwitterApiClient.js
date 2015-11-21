@@ -2,20 +2,17 @@
 
 /* @flow */
 
-import {EventEmitter} from 'events';
 import Twitter from 'twitter';
 
-type TwitterApiClientOptions = {
-  accessToken: string,
-  accessTokenSecret: string,
-  consumerKey: string,
-  consumerSecret: string
-}
-
 export default class TwitterApiClient {
-  _twitterClient: twitter;
+  _twitterClient: Twitter;
 
-  constructor({accessToken, accessTokenSecret, consumerKey, consumerSecret}: TwitterApiClientOptions) {
+  constructor({accessToken, accessTokenSecret, consumerKey, consumerSecret}: {
+    accessToken: string,
+    accessTokenSecret: string,
+    consumerKey: string,
+    consumerSecret: string
+  }) {
     this._twitterClient = new Twitter({
       accessToken,
       accessTokenSecret,
