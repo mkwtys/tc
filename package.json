@@ -1,6 +1,6 @@
 {
-  "name": "tc",
-  "description": "twitter client",
+  "name": "mkwtys-tc",
+  "description": "electron twitter client",
   "version": "0.0.0",
   "author": "mkwtys",
   "dependencies": {
