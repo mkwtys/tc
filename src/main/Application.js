@@ -24,13 +24,13 @@ export default class Application {
 
   bind() {
     app.on('window-all-closed', () => {
-        if (process.platform != 'darwin') {
-          app.quit();
-        }
-      })
-      .on('ready', () => {
-        this.onReady();
-      });
+      if (process.platform !== 'darwin') {
+        app.quit();
+      }
+    })
+    .on('ready', () => {
+      this.onReady();
+    });
   }
 
   onAuthenticationSucceeded({accessToken, accessTokenSecret}) {

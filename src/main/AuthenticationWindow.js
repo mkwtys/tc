@@ -23,8 +23,8 @@ export default class AuthenticationWindow extends EventEmitter {
     url: string
   }) {
     this._window.webContents.on('will-navigate', (event, url) => {
-      let matched;
-      if (matched = url.match(/\?oauth_token=([^&]*)&oauth_verifier=([^&]*)/)) {
+      let matched = url.match(/\?oauth_token=([^&]*)&oauth_verifier=([^&]*)/);
+      if (matched) {
         twitterApi.getAccessToken(requestToken, requestTokenSecret, matched[2], (error, accessToken, accessTokenSecret) => {
           this.emit('authentication:succeeded', {
             accessToken,
@@ -35,11 +35,15 @@ export default class AuthenticationWindow extends EventEmitter {
         setImmediate(() => {
           this._window.close();
         });
-      } else if (matched = url.match(/&redirect_after_login_verification=([^&]*)/)) {
-        this._window.webContents.on('did-get-redirect-request', (event, oldUrl, newUrl, isMainFrame) => {
+        return;
+      }
+
+      matched = url.match(/&redirect_after_login_verification=([^&]*)/);
+      if (matched) {
+        this._window.webContents.on('did-get-redirect-request', (event, oldUrl, newUrl/*, isMainFrame*/) => {
           this.getAccessToken(twitterApi, requestToken, requestTokenSecret, newUrl);
         });
-      };
+      }
     });
     this._window.loadURL(url);
   }
