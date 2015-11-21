@@ -3,7 +3,7 @@
 /* @flow */
 
 import electron from 'electron';
-import AuthenticationWindow from './AuthenticationWindow';
+import AuthenticateWindow from './AuthenticateWindow';
 import MainWindow from './MainWindow';
 
 const app = electron.app;
@@ -33,25 +33,25 @@ export default class Application {
     });
   }
 
-  onAuthenticationSucceeded({accessToken, accessTokenSecret}) {
+  onAuthenticateSucceeded({accessToken, accessTokenSecret}) {
     this._accessToken = accessToken;
     this._accessTokenSecret = accessTokenSecret;
     this.openMainWindow();
   }
 
   onReady() {
-    this.openAuthenicationWindow();
+    this.openAuthenticateWindow();
     this.setupMenu();
   }
 
-  openAuthenicationWindow() {
-    const authenticationWindow = new AuthenticationWindow({
+  openAuthenticateWindow() {
+    const authenticateWindow = new AuthenticateWindow({
       callback: 'https://github.com/mkwtys/tc',
       consumerKey: this._consumerKey,
       consumerSecret: this._consumerSecret
     });
-    authenticationWindow.on('authentication:succeeded', (payload) => {
-      this.onAuthenticationSucceeded(payload);
+    authenticateWindow.on('authenticate:succeeded', (payload) => {
+      this.onAuthenticateSucceeded(payload);
     });
   }
 
