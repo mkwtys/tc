@@ -26,9 +26,12 @@ export default class AuthenticateWindow extends EventEmitter {
       let matched = url.match(/\?oauth_token=([^&]*)&oauth_verifier=([^&]*)/);
       if (matched) {
         twitterApi.getAccessToken(requestToken, requestTokenSecret, matched[2], (error, accessToken, accessTokenSecret) => {
-          this.emit('authenticate:succeeded', {
-            accessToken,
-            accessTokenSecret
+          twitterApi.verifyCredentials(accessToken, accessTokenSecret, (error, profile/*, response*/) => {
+            this.emit('authenticate:succeeded', {
+              accessToken,
+              accessTokenSecret,
+              profile
+            });
           });
         });
         event.preventDefault();
