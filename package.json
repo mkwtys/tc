@@ -1,9 +1,10 @@
 {
-  "name": "tc",
-  "description": "twitter client",
+  "name": "mkwtys-tc",
+  "description": "electron twitter client",
   "version": "0.0.0",
   "author": "mkwtys",
   "dependencies": {
+    "jsonfile": "^2.2.3",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "node-twitter-api": "^1.6.2",

@@ -2,8 +2,9 @@
 
 /* @flow */
 
+import AuthenticateWindow from './AuthenticateWindow';
 import electron from 'electron';
-import AuthenticationWindow from './AuthenticationWindow';
+import jsonfile from 'jsonfile';
 import MainWindow from './MainWindow';
 
 const app = electron.app;
@@ -16,10 +17,9 @@ export default class Application {
   _mainWindow: MainWindow;
 
   constructor() {
-    this._accessToken = null;
-    this._accessTokenSecret = null;
-    this._consumerKey = 'ANpNHJTRSTtnFZsjSnwIY1KSv';
-    this._consumerSecret = 'Iza6ZGddrEk475o8DG7YR0JVH6LLjwZqOH7ZEWbs7txq22uOZR';
+    global.consumerKey = 'ANpNHJTRSTtnFZsjSnwIY1KSv';
+    global.consumerSecret = 'Iza6ZGddrEk475o8DG7YR0JVH6LLjwZqOH7ZEWbs7txq22uOZR';
+    global.twitterTokenPath = `${app.getPath('userData')}/twitter-token.json`;
   }
 
   bind() {
@@ -33,25 +33,36 @@ export default class Application {
     });
   }
 
-  onAuthenticationSucceeded({accessToken, accessTokenSecret}) {
-    this._accessToken = accessToken;
-    this._accessTokenSecret = accessTokenSecret;
+  onAuthenticateSucceeded({accessToken, accessTokenSecret}) {
+    jsonfile.writeFile(global.twitterTokenPath, {accessToken, accessTokenSecret}, () => {});
     this.openMainWindow();
   }
 
   onReady() {
-    this.openAuthenicationWindow();
+    let token = null;
+    try {
+      token = jsonfile.readFileSync(global.twitterTokenPath);
+    } catch (error) {
+      console.error(error);
+    }
+
+    if (token !== null && token.accessToken && token.accessTokenSecret) {
+      this.openMainWindow();
+    } else {
+      this.openAuthenticateWindow();
+    }
+
     this.setupMenu();
   }
 
-  openAuthenicationWindow() {
-    const authenticationWindow = new AuthenticationWindow({
+  openAuthenticateWindow() {
+    const authenticateWindow = new AuthenticateWindow({
       callback: 'https://github.com/mkwtys/tc',
-      consumerKey: this._consumerKey,
-      consumerSecret: this._consumerSecret
+      consumerKey: global.consumerKey,
+      consumerSecret: global.consumerSecret
     });
-    authenticationWindow.on('authentication:succeeded', (payload) => {
-      this.onAuthenticationSucceeded(payload);
+    authenticateWindow.on('authenticate:succeeded', (payload) => {
+      this.onAuthenticateSucceeded(payload);
     });
   }
 

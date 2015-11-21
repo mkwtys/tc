@@ -8,7 +8,7 @@ import TwitterApi from 'node-twitter-api';
 
 const BrowserWindow = electron.BrowserWindow;
 
-export default class AuthenticationWindow extends EventEmitter {
+export default class AuthenticateWindow extends EventEmitter {
   _window: BrowserWindow;
 
   constructor({callback, consumerKey, consumerSecret}) {
@@ -26,9 +26,12 @@ export default class AuthenticationWindow extends EventEmitter {
       let matched = url.match(/\?oauth_token=([^&]*)&oauth_verifier=([^&]*)/);
       if (matched) {
         twitterApi.getAccessToken(requestToken, requestTokenSecret, matched[2], (error, accessToken, accessTokenSecret) => {
-          this.emit('authentication:succeeded', {
-            accessToken,
-            accessTokenSecret
+          twitterApi.verifyCredentials(accessToken, accessTokenSecret, (error, profile/*, response*/) => {
+            this.emit('authenticate:succeeded', {
+              accessToken,
+              accessTokenSecret,
+              profile
+            });
           });
         });
         event.preventDefault();
