@@ -17,6 +17,8 @@ export default class Application {
   _mainWindow: MainWindow;
 
   constructor() {
+    global.accessToken = '';
+    global.accessTokenSecret = '';
     global.consumerKey = 'ANpNHJTRSTtnFZsjSnwIY1KSv';
     global.consumerSecret = 'Iza6ZGddrEk475o8DG7YR0JVH6LLjwZqOH7ZEWbs7txq22uOZR';
     global.twitterTokenPath = `${app.getPath('userData')}/twitter-token.json`;
@@ -47,6 +49,7 @@ export default class Application {
     }
 
     if (token !== null && token.accessToken && token.accessTokenSecret) {
+      this.setToken(token);
       this.openMainWindow();
     } else {
       this.openAuthenticateWindow();
@@ -61,8 +64,9 @@ export default class Application {
       consumerKey: global.consumerKey,
       consumerSecret: global.consumerSecret
     });
-    authenticateWindow.on('authenticate:succeeded', (payload) => {
-      this.onAuthenticateSucceeded(payload);
+    authenticateWindow.on('authenticate:succeeded', ({accessToken, accessTokenSecret/*, profile*/}) => {
+      this.setToken({accessToken, accessTokenSecret});
+      this.onAuthenticateSucceeded({accessToken, accessTokenSecret});
     });
   }
 
@@ -73,6 +77,11 @@ export default class Application {
   run() {
     this.startCrashReporter();
     this.bind();
+  }
+
+  setToken({accessToken, accessTokenSecret}) {
+    global.accessToken = accessToken;
+    global.accessTokenSecret = accessTokenSecret;
   }
 
   setupMenu() {
